@@ -421,7 +421,10 @@ class CevencoderUI:
                     self.media_file = cev_in.MediaFile(filepath, progress_callback=self.progress_queue.put)
                     self.master.after(0, self._post_import_success)
                 except Exception as e:
-                    self.master.after(0, lambda: self._post_import_failure(e))
+                    error_message = f"Error loading media: {e}"
+                    self.status_bar.config(text=error_message)
+                    print(error_message)
+                    traceback.print_exc()
                 finally:
                     self.master.after(100, self.destroy_import_dialog)
                     self.stop_polling = True
@@ -454,12 +457,6 @@ class CevencoderUI:
         except:
             pass
         self.update_frame(0)
-
-    def _post_import_failure(self, e):
-        error_message = f"Error loading media: {e}"
-        self.status_bar.config(text=error_message)
-        print(error_message)
-        traceback.print_exc()
 
     def poll_progress(self):
         if not self.stop_polling:
